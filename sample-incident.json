@@ -1,0 +1,49 @@
+{
+  "title": "HubSpot contact update returns 409",
+  "source": "support-ticket-8841",
+  "user": {
+    "portalId": 123456,
+    "email": "student@example.com"
+  },
+  "metadata": {
+    "featureFlag": "hubspot-sync-v2",
+    "appVersion": "1.14.2"
+  },
+  "request": {
+    "method": "PATCH",
+    "url": "https://api.hubapi.com/crm/v3/objects/contacts/1001",
+    "headers": {
+      "Authorization": "Bearer very-secret-token",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "properties": {
+        "email": "student@example.com",
+        "firstname": "Ana"
+      }
+    }
+  },
+  "response": {
+    "status": 409,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "status": "error",
+      "message": "Property values were not valid"
+    }
+  },
+  "webhooks": [
+    {
+      "eventType": "contact.propertyChange",
+      "objectId": 1001
+    }
+  ],
+  "logs": [
+    {
+      "level": "error",
+      "message": "HubSpot update failed",
+      "traceId": "trace-001"
+    }
+  ]
+}

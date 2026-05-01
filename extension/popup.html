@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Engaged BugSnapshot</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 12px;
+        width: 360px;
+      }
+      h1 {
+        font-size: 16px;
+        margin: 0 0 10px;
+      }
+      .line {
+        margin-bottom: 8px;
+      }
+      label {
+        display: block;
+        font-size: 12px;
+        margin-bottom: 3px;
+      }
+      input[type="text"],
+      input[type="password"],
+      textarea {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 7px;
+        font-size: 12px;
+      }
+      textarea {
+        height: 130px;
+        font-family: Consolas, monospace;
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+      }
+      button {
+        padding: 7px 9px;
+        font-size: 12px;
+        cursor: pointer;
+      }
+      #status {
+        font-size: 12px;
+        margin-bottom: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Engaged BugSnapshot (Beta)</h1>
+    <div id="status">Carregando...</div>
+
+    <div class="line">
+      <label for="endpointUrl">Endpoint de snapshot (POST)</label>
+      <input id="endpointUrl" type="text" placeholder="https://api.engaged.com.br/internal/auto-snapshot" />
+    </div>
+
+    <div class="line">
+      <label for="endpointToken">Token (opcional)</label>
+      <input id="endpointToken" type="password" placeholder="Bearer token opcional" />
+    </div>
+
+    <div class="line">
+      <label>
+        <input id="autoSend" type="checkbox" />
+        Enviar automaticamente quando erro for detectado
+      </label>
+    </div>
+
+    <div class="row line">
+      <button id="saveSettings">Salvar configuração</button>
+      <button id="createSnapshot">Criar snapshot agora</button>
+      <button id="sendLast">Enviar último</button>
+    </div>
+
+    <div class="line">
+      <label for="snapshotOutput">Último snapshot</label>
+      <textarea id="snapshotOutput" readonly></textarea>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+  </html>
