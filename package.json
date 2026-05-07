@@ -7,6 +7,8 @@
     "build": "tsc -p tsconfig.json",
     "dev": "tsx src/cli.ts",
     "snapshot": "tsx src/cli.ts snapshot:create",
+    "report": "tsx src/cli.ts report:create",
+    "thread": "tsx src/cli.ts thread:create",
     "replay:serve": "tsx src/cli.ts replay:serve",
     "replay:run": "tsx src/cli.ts replay:run",
     "intake:serve": "tsx src/intake-server.ts"

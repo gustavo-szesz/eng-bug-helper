@@ -45,7 +45,7 @@ function sanitizeValue(value: unknown, keyHint?: string): unknown {
 
   return value;
 }
-
+ 
 function nowId(): string {
   const stamp = new Date().toISOString().replace(/[-:.TZ]/g, "");
   const random = Math.random().toString(36).slice(2, 8);
@@ -91,7 +91,7 @@ export async function createSnapshot(inputPath: string, outputPath?: string): Pr
   };
 
   const validated = BugSnapshotSchema.parse(snapshot);
-  const target = resolve(outputPath ?? `snapshots\\${validated.id}.json`);
+  const target = outputPath ? resolve(outputPath) : resolve("snapshots", `${validated.id}.json`);
   await mkdir(dirname(target), { recursive: true });
   await writeFile(target, `${JSON.stringify(validated, null, 2)}\n`, "utf-8");
   return target;

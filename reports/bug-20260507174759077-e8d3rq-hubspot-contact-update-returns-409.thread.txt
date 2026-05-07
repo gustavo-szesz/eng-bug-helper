@@ -1,0 +1,17 @@
+*HubSpot contact update returns 409*
+
+*OrgId:* 123456
+*Cliente:* Empresa Teste
+*Links úteis:*
+• https://admin.online.engaged.com.br/course/68537769e70f90001cd3ac21/
+
+@vinimendes @Gabriel
+
+O contato não conseguiu atualizar em uma integração com HubSpot, retornando erro 409 de conflito.
+
+---
+
+*Bug report bruto:*
+```
+Snapshot ID: bug-20260507174759077-e8d3rq
+```

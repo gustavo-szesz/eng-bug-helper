@@ -1,6 +1,9 @@
 import { Command } from "commander";
+import { readFileSync } from "node:fs";
 import { createSnapshot, readSnapshot } from "./snapshot.js";
 import { runReplay, startReplaySandbox } from "./replay.js";
+import { createIssueReport } from "./report.js";
+import { createSlackThread } from "./slack-thread.js";
 
 const program = new Command();
 
@@ -9,7 +12,7 @@ program
   .description("BugSnapshot + Replay Sandbox for HubSpot integration debugging")
   .version("0.1.0");
 
-program
+program 
   .command("snapshot:create")
   .requiredOption("-i, --input <path>", "Path to raw incident JSON")
   .option("-o, --output <path>", "Output snapshot path")
@@ -36,6 +39,57 @@ program
     const snapshot = await readSnapshot(options.snapshot);
     await runReplay(snapshot, options.baseUrl, Number(options.timeoutMs));
   });
+
+program
+  .command("report:create")
+  .requiredOption("-i, --input <path>", "Path to snapshot or browser incident JSON")
+  .option("-o, --output <path>", "Output directory or markdown file path")
+  .action(async (options: { input: string; output?: string }) => {
+    const { markdownPath, jsonPath } = await createIssueReport(options.input, options.output);
+    process.stdout.write(`Report created: ${markdownPath}\n`);
+    process.stdout.write(`Draft JSON: ${jsonPath}\n`);
+  });
+
+program
+  .command("thread:create")
+  .requiredOption("-i, --input <path>", "Path to report JSON file")
+  .option("--org-id <id>", "OrgId to override URL extraction")
+  .option("--client-name <name>", "Client name")
+  .option("--mentions <list>", "Comma-separated mentions (e.g., '@john,@jane')")
+  .option("--useful-links <list>", "Comma-separated useful links")
+  .option("--description <text>", "Humanized error description")
+  .action(
+    async (options: {
+      input: string;
+      orgId?: string;
+      clientName?: string;
+      mentions?: string;
+      usefulLinks?: string;
+      description?: string;
+    }) => {
+      const mentions = options.mentions
+        ? options.mentions.split(",").map((m) => m.trim())
+        : [];
+      const usefulLinks = options.usefulLinks
+        ? options.usefulLinks.split(",").map((link) => link.trim())
+        : [];
+
+      const { threadTextPath, threadJsonPath } = await createSlackThread(options.input, {
+        orgId: options.orgId,
+        clientName: options.clientName,
+        mentions,
+        usefulLinks,
+        humanDescription: options.description
+      });
+
+      const threadContent = readFileSync(threadTextPath, "utf-8");
+      process.stdout.write(`Slack thread text: ${threadTextPath}\n`);
+      process.stdout.write(`Slack thread JSON: ${threadJsonPath}\n`);
+      process.stdout.write("\n");
+      process.stdout.write("--- COPY/PASTE TO SLACK ---\n");
+      process.stdout.write(`${threadContent}\n`);
+    }
+  );
 
 program.parseAsync(process.argv).catch((error: unknown) => {
   const message = error instanceof Error ? error.message : String(error);

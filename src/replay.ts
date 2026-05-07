@@ -12,7 +12,7 @@ function normalizeHeaders(raw: Record<string, unknown>): Record<string, string> 
     output[key] = String(v);
   }
   return output;
-}
+} 
 
 function writeJson(res: ServerResponse, status: number, payload: unknown): void {
   const body = JSON.stringify(payload, null, 2);

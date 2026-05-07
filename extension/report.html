@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Incident Report Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f8f9fa;
+            color: #1a1a1a;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        header {
+            margin-bottom: 40px;
+            border-bottom: 1px solid #e8e8e8;
+            padding-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #0a0a0a;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 28px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .card h2 {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #0a0a0a;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 13px;
+            border: 1px solid #d8d8d8;
+            border-radius: 6px;
+            background: #fafafa;
+            color: #1a1a1a;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            background: white;
+            border-color: #333;
+            box-shadow: 0 0 0 1px #333;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #999;
+            margin: 24px 0 12px 0;
+            padding-top: 12px;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .graphql-info {
+            background: #f5f5f5;
+            border-left: 3px solid #333;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin: 12px 0;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .graphql-info.show {
+            display: block;
+        }
+
+        .graphql-info strong {
+            color: #1a1a1a;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .graphql-error-item {
+            background: white;
+            border: 1px solid #e8e8e8;
+            padding: 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 11px;
+        }
+
+        .snapshot-info {
+            background: #f5f5f5;
+            border-left: 3px solid #333;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 16px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid #d8d8d8;
+            background: white;
+            color: #1a1a1a;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            background: #f5f5f5;
+            border-color: #999;
+        }
+
+        button.primary {
+            background: #1a1a1a;
+            color: white;
+            border-color: #1a1a1a;
+        }
+
+        button.primary:hover {
+            background: #333;
+            border-color: #333;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .preview-container {
+            margin-top: 20px;
+        }
+
+        .slack-preview {
+            background: #fff;
+            border: 1px solid #d8d8d8;
+            border-radius: 6px;
+            padding: 16px;
+            font-size: 12px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+            line-height: 1.6;
+            color: #1a1a1a;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .preview-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .status-message {
+            padding: 10px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-bottom: 16px;
+            border-left: 3px solid #333;
+            display: none;
+        }
+
+        .status-message.show {
+            display: block;
+        }
+
+        .status-message.success {
+            background: #f0f9f0;
+            color: #1a6f1a;
+            border-left-color: #22c55e;
+        }
+
+        .status-message.error {
+            background: #fef2f2;
+            color: #7f1f1f;
+            border-left-color: #ef4444;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 32px 16px;
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Incident Report Generator</h1>
+        <p class="subtitle">Generate formatted incident reports for incident tracking systems</p>
+      </header>
+
+      <div id="statusMessage" class="status-message"></div>
+
+      <div class="main-grid">
+        <!-- LEFT: Form -->
+        <div class="card">
+          <h2>Incident Information</h2>
+
+          <div class="snapshot-info" id="snapshotInfo">
+            Loading incident data...
+          </div>
+
+          <div class="form-group">
+            <label for="reportTitle">Incident Title</label>
+            <input id="reportTitle" type="text" placeholder="e.g., HubSpot contact update returns 409 conflict" />
+          </div>
+
+          <div class="section-title">Organization Context</div>
+
+          <div class="form-group">
+            <label for="orgId">Organization ID</label>
+            <input id="orgId" type="text" placeholder="e.g., 63c022ce0d2d6f000858c442" />
+          </div>
+
+          <div class="form-group">
+            <label for="clientName">Client Name</label>
+            <input id="clientName" type="text" placeholder="e.g., Acme Corporation" />
+          </div>
+
+          <div class="graphql-info" id="graphqlInfo">
+            <strong>GraphQL Errors Detected</strong>
+            <div id="graphqlErrorsList"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="usefulLinks">Reference Links (one per line)</label>
+            <textarea id="usefulLinks" placeholder="https://admin.engaged.com.br/...&#10;https://docs.api.com/..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="mentions">Stakeholders (comma or line separated)</label>
+            <input id="mentions" type="text" placeholder="@vinimendes, @gabriel, @team-dev" />
+          </div>
+
+          <div class="section-title">Summary</div>
+
+          <div class="form-group">
+            <label for="description">Executive Summary</label>
+            <textarea id="description" placeholder="Describe the incident in clear, non-technical language..."></textarea>
+          </div>
+
+          <div class="button-group">
+            <button id="generateBtn" class="primary">Generate Report</button>
+            <button id="resetBtn">Clear</button>
+          </div>
+        </div>
+
+        <!-- RIGHT: Preview -->
+        <div class="card">
+          <h2>Report Preview</h2>
+          <p class="subtitle" style="margin-bottom: 16px; font-size: 12px;">This is how your incident report will appear</p>
+
+          <div id="previewContainer">
+            <div class="empty-state">
+              Complete the form and click "Generate Report" to see the formatted output
+            </div>
+          </div>
+
+          <div class="button-group" style="margin-top: 20px;">
+            <button id="copyBtn" class="primary" disabled style="flex: 1;">Copy to Clipboard</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="report.js"></script>
+  </body>
+</html>

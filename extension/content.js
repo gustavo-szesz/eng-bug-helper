@@ -16,6 +16,10 @@ function collectContext() {
     userAgent: navigator.userAgent,
     language: navigator.language,
     platform: navigator.platform,
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    online: navigator.onLine,
+    cookiesEnabled: navigator.cookieEnabled,
+    visibilityState: document.visibilityState,
     viewport: {
       width: window.innerWidth,
       height: window.innerHeight

@@ -1,6 +1,7 @@
 import { createServer } from "node:http";
 import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import { BrowserSnapshotSchema } from "./types.js";
 
 const PORT = Number(process.env.PORT || "4020");
 
@@ -11,7 +12,7 @@ function readBody(req: import("node:http").IncomingMessage): Promise<string> {
     req.on("end", () => resolveBody(Buffer.concat(chunks).toString("utf-8")));
     req.on("error", reject);
   });
-}
+} 
 
 createServer(async (req, res) => {
   try {
@@ -28,13 +29,20 @@ createServer(async (req, res) => {
     }
 
     const raw = await readBody(req);
-    const payload = JSON.parse(raw) as { id?: string };
-    const id = payload.id || `bug-${Date.now()}`;
+    const payload = JSON.parse(raw) as unknown;
+    const parsed = BrowserSnapshotSchema.safeParse(payload);
+    if (!parsed.success) {
+      res.writeHead(400, { "content-type": "application/json" });
+      res.end(JSON.stringify({ ok: false, error: "Invalid browser snapshot payload", details: parsed.error.flatten() }));
+      return;
+    }
+
+    const id = parsed.data.id || `bug-${Date.now()}`;
 
     const dir = resolve("snapshots", "remote");
     await mkdir(dir, { recursive: true });
     const filePath = resolve(dir, `${id}.json`);
-    await writeFile(filePath, `${JSON.stringify(payload, null, 2)}\n`, "utf-8");
+    await writeFile(filePath, `${JSON.stringify({ ...parsed.data, receivedAt: new Date().toISOString() }, null, 2)}\n`, "utf-8");
 
     res.writeHead(201, { "content-type": "application/json" });
     res.end(JSON.stringify({ ok: true, bugId: id, storedAt: filePath }));

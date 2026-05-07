@@ -1,0 +1,16 @@
+{
+  "title": "HubSpot contact update returns 409",
+  "orgId": "123456",
+  "clientName": "Empresa Teste",
+  "usefulLinks": [
+    "https://admin.online.engaged.com.br/course/68537769e70f90001cd3ac21/"
+  ],
+  "mentions": [
+    "@vinimendes",
+    "@Gabriel"
+  ],
+  "humanDescription": "O contato não conseguiu atualizar em uma integração com HubSpot, retornando erro 409 de conflito.",
+  "snapshotId": "bug-20260507174759077-e8d3rq",
+  "graphqlErrors": [],
+  "slackThreadText": "*HubSpot contact update returns 409*\n\n*OrgId:* 123456\n*Cliente:* Empresa Teste\n*Links úteis:*\n• https://admin.online.engaged.com.br/course/68537769e70f90001cd3ac21/\n\n@vinimendes @Gabriel\n\nO contato não conseguiu atualizar em uma integração com HubSpot, retornando erro 409 de conflito.\n\n---\n\n*Bug report bruto:*\n```\nSnapshot ID: bug-20260507174759077-e8d3rq\n```"
+}

@@ -1,0 +1,115 @@
+{
+  "title": "HubSpot contact update returns 409",
+  "summary": "PATCH /crm/v3/objects/contacts/1001 retornou HTTP 409.",
+  "severity": "high",
+  "environment": {
+    "source": "support-ticket-8841",
+    "requestMethod": "PATCH",
+    "requestPath": "/crm/v3/objects/contacts/1001",
+    "requestUrl": "https://api.hubapi.com/crm/v3/objects/contacts/1001",
+    "responseStatus": 409,
+    "metadata": {
+      "featureFlag": "hubspot-sync-v2",
+      "appVersion": "1.14.2"
+    },
+    "user": {
+      "portalId": 123456,
+      "email": "***REDACTED***"
+    }
+  },
+  "reproductionSteps": [
+    "1. npm run replay:serve -- --snapshot snapshots/bug-20260507174759077-e8d3rq.json",
+    "2. npm run replay:run -- --snapshot snapshots/bug-20260507174759077-e8d3rq.json --base-url http://localhost:4010",
+    "3. Compare o retorno do sandbox com a falha original."
+  ],
+  "expected": "A chamada deveria concluir sem erro ou retornar um status compatível com o fluxo esperado.",
+  "actual": "Resposta HTTP 409 com body {\n  \"status\": \"error\",\n  \"message\": \"Property values were not valid\"\n}",
+  "evidence": {
+    "request": {
+      "method": "PATCH",
+      "url": "https://api.hubapi.com/crm/v3/objects/contacts/1001",
+      "headers": {
+        "Authorization": "***REDACTED***",
+        "Content-Type": "application/json"
+      },
+      "query": {},
+      "body": {
+        "properties": {
+          "email": "***REDACTED***",
+          "firstname": "Ana"
+        }
+      },
+      "path": "/crm/v3/objects/contacts/1001"
+    },
+    "response": {
+      "status": 409,
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "status": "error",
+        "message": "Property values were not valid"
+      }
+    },
+    "logs": [
+      {
+        "level": "error",
+        "message": "HubSpot update failed",
+        "traceId": "trace-001"
+      }
+    ],
+    "webhooks": [
+      {
+        "eventType": "contact.propertyChange",
+        "objectId": 1001
+      }
+    ],
+    "sections": [
+      {
+        "title": "Resumo",
+        "body": [
+          "Fonte: support-ticket-8841",
+          "Entrada: HubSpot contact update returns 409",
+          "Requisição: PATCH /crm/v3/objects/contacts/1001",
+          "Resposta: HTTP 409"
+        ]
+      },
+      {
+        "title": "Request",
+        "body": [
+          "URL: https://api.hubapi.com/crm/v3/objects/contacts/1001",
+          "Headers: {\n  \"Authorization\": \"***REDACTED***\",\n  \"Content-Type\": \"application/json\"\n}",
+          "Body: {\n  \"properties\": {\n    \"email\": \"***REDACTED***\",\n    \"firstname\": \"Ana\"\n  }\n}"
+        ]
+      },
+      {
+        "title": "Response",
+        "body": [
+          "Status: 409",
+          "Headers: {\n  \"Content-Type\": \"application/json\"\n}",
+          "Body: {\n  \"status\": \"error\",\n  \"message\": \"Property values were not valid\"\n}"
+        ]
+      },
+      {
+        "title": "Sinais de suporte",
+        "body": [
+          "Logs capturados: 1",
+          "Webhooks capturados: 1",
+          "Query params: 0"
+        ]
+      },
+      {
+        "title": "Reprodução",
+        "body": [
+          "1. npm run replay:serve -- --snapshot snapshots/bug-20260507174759077-e8d3rq.json",
+          "2. npm run replay:run -- --snapshot snapshots/bug-20260507174759077-e8d3rq.json --base-url http://localhost:4010",
+          "3. Compare o retorno do sandbox com a falha original."
+        ]
+      }
+    ]
+  },
+  "slackMessage": "[HIGH] HubSpot contact update returns 409\nPATCH /crm/v3/objects/contacts/1001 retornou HTTP 409.\nSnapshot: bug-20260507174759077-e8d3rq\nTipo: bug",
+  "id": "bug-20260507174759077-e8d3rq",
+  "kind": "bug",
+  "markdown": "# HubSpot contact update returns 409\n\n- Snapshot: bug-20260507174759077-e8d3rq\n- Kind: bug\n- Severity: high\n\nPATCH /crm/v3/objects/contacts/1001 retornou HTTP 409.\n\n## Resumo\n\nFonte: support-ticket-8841\nEntrada: HubSpot contact update returns 409\nRequisição: PATCH /crm/v3/objects/contacts/1001\nResposta: HTTP 409\n\n## Request\n\nURL: https://api.hubapi.com/crm/v3/objects/contacts/1001\nHeaders: {\n  \"Authorization\": \"***REDACTED***\",\n  \"Content-Type\": \"application/json\"\n}\nBody: {\n  \"properties\": {\n    \"email\": \"***REDACTED***\",\n    \"firstname\": \"Ana\"\n  }\n}\n\n## Response\n\nStatus: 409\nHeaders: {\n  \"Content-Type\": \"application/json\"\n}\nBody: {\n  \"status\": \"error\",\n  \"message\": \"Property values were not valid\"\n}\n\n## Sinais de suporte\n\nLogs capturados: 1\nWebhooks capturados: 1\nQuery params: 0\n\n## Reprodução\n\n1. npm run replay:serve -- --snapshot snapshots/bug-20260507174759077-e8d3rq.json\n2. npm run replay:run -- --snapshot snapshots/bug-20260507174759077-e8d3rq.json --base-url http://localhost:4010\n3. Compare o retorno do sandbox com a falha original.\n\n## Slack draft\n\n```text\n[HIGH] HubSpot contact update returns 409\nPATCH /crm/v3/objects/contacts/1001 retornou HTTP 409.\nSnapshot: bug-20260507174759077-e8d3rq\nTipo: bug\n```\n"
+}

@@ -1,5 +1,6 @@
-const MAX_EVENTS = 120;
+const MAX_EVENTS = 200;
 const tabBuffers = new Map();
+let lastSnapshot = null;
 
 function nowIso() {
   return new Date().toISOString();
@@ -83,6 +84,9 @@ function isErrorLikeEvent(type) {
 function buildSnapshot(tab, trigger) {
   const tabId = tab.id;
   const buffer = ensureBuffer(tabId);
+  const errorEvents = buffer.events.filter((event) => /error|rejection/i.test(event.type));
+  const networkEvents = buffer.events.filter((event) => /fetch|xhr|graphql|network/i.test(event.type));
+  const graphqlErrors = buffer.events.filter((event) => /graphql.*error|fetch-error.*graphql|xhr-error.*graphql/i.test(event.type));
   return {
     id: createId(),
     createdAt: nowIso(),
@@ -97,11 +101,18 @@ function buildSnapshot(tab, trigger) {
     context: sanitize(buffer.context),
     userAgent: sanitize(buffer.context.userAgent || ""),
     events: sanitize(buffer.events),
-    eventCount: buffer.events.length
+    eventCount: buffer.events.length,
+    summary: {
+      errorCount: errorEvents.length,
+      networkCount: networkEvents.length,
+      graphqlErrorCount: graphqlErrors.length,
+      lastEventType: buffer.events.length > 0 ? buffer.events[buffer.events.length - 1].type : null
+    }
   };
 }
 
 async function saveLastSnapshot(tabId, snapshot) {
+  lastSnapshot = snapshot;
   await chrome.storage.local.set({
     [`lastSnapshot:${tabId}`]: snapshot,
     lastSnapshotGlobal: snapshot
@@ -235,6 +246,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         reason: String(error)
       }));
       sendResponse({ ok: true, snapshotId: snapshot.id, delivery });
+      return;
+    }
+
+    if (message?.type === "GET_LAST_SNAPSHOT") {
+      if (lastSnapshot) {
+        sendResponse({ ok: true, snapshot: lastSnapshot });
+      } else {
+        sendResponse({ ok: false, error: "No snapshot available" });
+      }
       return;
     }
 
